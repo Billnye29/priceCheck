@@ -1,16 +1,43 @@
-# This is a sample Python script.
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+import concurrent.futures
+import time
+import selenium
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+# Prints out thread_id and the name of product that thread is assigned to look for.
+# Executes product_searcher.py to search for the product
+# product_searcher.py returns a file with product information.
+# Returned file will be named after the product being searched for and searched date.
+def launch_price_check(product_name, thread_id):
+    print("Thread ID: ")
+    print(thread_id)
+    print("Launching checker for: " + product_name)
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+
+# File should be formatted as shown.
+# item_Name
+# item_Name should be a string with the least amount of words possible to describe the item.
+# For instance the product: "LEGO - Star Wars 501st Clone Troopers Battle Pack 75345".
+# Should be simplified to "501st Clone Troopers Battle Pack".
+# There should only be one product perline in the "items.txt" file.
+def file_io():
+    it_count = 0
+    thread_id = 0
+    fin = open("items.txt", 'r')
+    line = fin.readlines()
+    for line in line:
+        it_count += 1
+    fin.close()
+    print(it_count)
+    pool = concurrent.futures.ThreadPoolExecutor(max_workers=it_count)
+
+    fin = open("items.txt", 'r')
+    line = fin.readlines()
+    for line in line:
+        pool.submit(lambda arg, arg_2: launch_price_check(arg, arg_2), line, thread_id)
+        thread_id += 1
+
+    fin.close()
+    pool.shutdown(wait=True)
+
+
+file_io()
